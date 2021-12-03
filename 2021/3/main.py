@@ -39,7 +39,7 @@ def binary_swap(binary):
 def sum_by_binary_position(diagnostic_report: list):
     sum_by_position = []
 
-    # prepare the list with the an element per binary digit
+    # prepare the list appending a 0 for each binary digit
     for digit in diagnostic_report[0]:
         sum_by_position.append(0)
 
@@ -106,12 +106,11 @@ def report_by_both_criteria(diagnostic_report: list):
         # at this point there is only one list element left, we extract it
         rating = ratings[rating_index][0]
 
-        # do the neede steps to finally end up with a binary string
+        # do additional steps to end up with a binary string
         result = ''
         for digit in rating:
             result += digit
         # overwrite the 2 dimensional array with the new binary string
-
         ratings[rating_index] = result
 
     # add the designated ratings as key value and return

@@ -61,7 +61,7 @@ def sum_by_binary_position(diagnostic_report: list):
     return most_common_values
 
 
-def extract_power_consumption():
+def extract_power_consumption(diagnostic_report):
     most_common_values = sum_by_binary_position(diagnostic_report)
     consumption_rating = { 'gamma': '', 'epsilon': '' }
     for value in most_common_values:
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     puzzle_input_file.close()
 
     # task 1
-    consumption_rating = extract_power_consumption()
+    consumption_rating = extract_power_consumption(diagnostic_report)
     gamma_rate_decimal = binary_to_decimal(consumption_rating['gamma'])
     epsilon_rate_decimal = binary_to_decimal(consumption_rating['epsilon'])
     power_consumption = ( gamma_rate_decimal * epsilon_rate_decimal )

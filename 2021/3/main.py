@@ -30,7 +30,7 @@ def binary_to_decimal(binary: str):
     return decimal
 
 
-# for swapping binary digits
+# for swapping binary digits: 1 to 0 or 0 to 1
 def binary_swap(binary):
     return ( 1 * (int(binary) == 0) )
 
@@ -61,7 +61,7 @@ def sum_by_binary_position(diagnostic_report: list):
     return most_common_values
 
 
-def extract_power_consumption(diagnostic_report):
+def extract_power_consumption(diagnostic_report: list):
     most_common_values = sum_by_binary_position(diagnostic_report)
     consumption_rating = { 'gamma': '', 'epsilon': '' }
     for value in most_common_values:
@@ -76,31 +76,36 @@ def report_by_both_criteria(diagnostic_report: list):
         ratings[0].append(line)
         ratings[1].append(line)
 
-    # iterate thrugh both and append accordingly
+    # iterate thrugh both arrays
     for rating_index in range(len(ratings)):
 
+        # the position of the digit that we analyze
         position = 0
+
         while len(ratings[rating_index]) > 1:
-            # keep tabs on indexes for lines we want to keep until one remains
-            index_array = { 0: [], 1: []} # 0 = remove, 1 = keep
+            # keep tabs on indexes for lines we want to keep and not keep
+            index_array = { 0: [], 1: [] } # 0 = remove, 1 = keep
             preserved_index_numbers = []
-            most_common = sum_by_binary_position(ratings[rating_index])
-            most_common_number = most_common[position]
+            most_common_values = sum_by_binary_position(ratings[rating_index])
+            most_common_value = most_common_values[position]
 
             # this will swap to the least common value if rating_index = 1
-            swap_value = 1 - ( 1 * (most_common_number == rating_index) )
+            swap_value = 1 - ( 1 * (most_common_value == rating_index) )
 
-            # append reulst (index number) for those numbers we want to keep
+            # append result (index numbers) for those numbers we want to keep
             for i in range(len(ratings[rating_index])):
                 current_digit = int(ratings[rating_index][i][position])
                 res = 1 * (current_digit == swap_value)
                 index_array[res].append(i)
 
+            # we extract the index numbers we want to keep
             for index in index_array[1]:
                 preserved_index_numbers.append(ratings[rating_index][index])
 
-            # first iteration is done, if more; keep iterating
+            # then we overwrite the array with only the indexes we want to keep
             ratings[rating_index] = preserved_index_numbers
+
+            # we move one digit to the right after first iteration
             position += 1
 
         # at this point there is only one list element left, we extract it
@@ -110,7 +115,8 @@ def report_by_both_criteria(diagnostic_report: list):
         result = ''
         for digit in rating:
             result += digit
-        # overwrite the 2 dimensional array with the new binary string
+
+        # finally, we overwrite the array with the new binary string
         ratings[rating_index] = result
 
     # add the designated ratings as key value and return

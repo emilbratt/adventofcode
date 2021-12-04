@@ -2,8 +2,8 @@
 
 import os
 
-DIR_MAIN_FILE = os.path.dirname(os.path.abspath(__file__))
-FILE_PUZZLE_INPUT = os.path.join(DIR_MAIN_FILE,'puzzle_input.txt')
+DIR_MAIN_FILE = os.path.dirname( os.path.abspath(__file__) )
+FILE_PUZZLE_INPUT = os.path.join(DIR_MAIN_FILE, 'puzzle_input.txt')
 
 
 def open_puzzle_input():
@@ -13,7 +13,7 @@ def open_puzzle_input():
 def convert_puzzle_input_to_list(puzzle_input: object):
     binary_numbers = []
     for line in puzzle_input:
-        l = list(line[:-1]) # [:-1] because we need to skip new line: '\n'
+        l = list(line[:-1]) # [:-1] because we want to skip new line: '\n'
         binary_numbers.append(l)
     return binary_numbers
 
@@ -26,7 +26,7 @@ def binary_to_decimal(binary: str):
         binary_digit = binary[digit_count - i] # starting from left
         exponent = i - 1 # i starts from 1 higher than total digits
         power_of_position = 2 ** exponent
-        decimal += ( int(binary_digit) * power_of_position)
+        decimal += ( int(binary_digit) * power_of_position )
     return decimal
 
 

@@ -43,7 +43,7 @@ def get_bingo_boards(puzzle_input: object):
 def extract_bingo_random_numbers(random_numbers: list):
     # converts to list holding each character/number as one element
     list_random_numbers = random_numbers
-    list_random_numbers = clean_up_array(list_random_numbers, ',')
+    list_random_numbers = remove_array_delimitter(list_random_numbers, ',')
     list_random_numbers = one_dimesion_down_number_array(list_random_numbers)
     return list_random_numbers
 
@@ -57,45 +57,46 @@ def extract_bingo_board_numbers(bingo_boards: list):
         index += 1
         total_arrays -= 1
 
-        cur_array = clean_up_array(cur_array, ' ')
+        cur_array = remove_array_delimitter(cur_array, ' ')
         cur_array = one_dimesion_down_number_array(cur_array)
         new_bingo_boards.append(cur_array)
 
     return new_bingo_boards
 
-def clean_up_array(arr: list, delimitter: str):
-    total_characters = get_arr_len(arr)
+
+def remove_array_delimitter(arr: list, delimitter: str):
+    '''
+        turns [
+                ['4', '9', ',', '4', '8', ',', '9', '8']
+              ]
+
+        into  [
+                ['4', '9'], ['4', '8'], ['9', '8']
+              ]
+        where comma = delimitter
+    '''
+
     delimitter_count = 0
     is_delimitter = 0
     temp_number_register = { 0: [], 1: [], }
     key_register = { 0: [], 1: [], }
-    while total_characters > 1:
+    arr_index = 0
+    while ( arr_index + 1 ) < get_arr_len(arr):
 
-        # store first character in the shrinking list_random_numbers
-        char = arr[0]
-
-        # remove the character
-        del arr[0]
-        n = 0
-        for _ in arr:
-            n += 1
-
-        total_characters = n
-
-        # preserve last rounds delimitter values
-        old_is_delimitter = is_delimitter
-        old_delimitter_count = delimitter_count
+        # store first character in the array
+        arr_element = arr[arr_index]
 
         # if delimitter is found: is_delimitter = 1
-        is_delimitter = 1 * ( char == delimitter )
+        is_delimitter = 1 * ( arr_element == delimitter )
 
         # index based on how many delimitters we have counted
         delimitter_count += is_delimitter
 
-        insert_dict = {delimitter_count:char}
+        insert_dict = {delimitter_count:arr_element}
         temp_number_register[is_delimitter].append(insert_dict)
         key_register[is_delimitter].append(delimitter_count)
 
+        arr_index += 1
 
     number_register_dict = {}
     key_register = key_register[0]
@@ -143,7 +144,6 @@ def one_dimesion_down_number_array(number_list: list):
         extracted_numbers.append(n)
 
     return extracted_numbers
-
 
 
 def organize_bingo_boards_into_keys(bingo_boards: list):

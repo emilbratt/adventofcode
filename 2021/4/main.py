@@ -14,6 +14,8 @@ def get_random_numbers(puzzle_input: object):
     return list(random_numbers)
 
 
+def create_list(string_in: str):
+    return [f for f in string_in]
 
 def get_arr_len(arr: list):
     arr_len = 0
@@ -22,30 +24,17 @@ def get_arr_len(arr: list):
     return arr_len
 
 
-def get_bingo_boards(puzzle_input: object):
+def get_bingo_board_rows(puzzle_input: object):
 
     bingo_boards = { 0: [], 1: [] } # 0 = ignore, 1 = keep
-    temp_number_register = { 0: [], 1: [], }
-    key_register = { 0: [], 1: [], }
-
     line = puzzle_input.readline()
     while get_arr_len(line) > 0:
-
-        # if 0, it gets thrown away
-        res = 1 - ( get_arr_len(line) < 2 )
-        print
-        bingo_boards[res].append(list(line))
+        line = create_list(line)
+        res = ( get_arr_len(line) > 2 )
+        bingo_boards[res].append(create_list(line))
         line = puzzle_input.readline()
 
     return bingo_boards[1]
-
-
-def extract_bingo_random_numbers(random_numbers: list):
-    # converts to list holding each character/number as one element
-    list_random_numbers = random_numbers
-    list_random_numbers = remove_array_delimitter(list_random_numbers, ',')
-    list_random_numbers = one_dimesion_down_number_array(list_random_numbers)
-    return list_random_numbers
 
 
 def extract_bingo_board_numbers(bingo_boards: list):
@@ -73,7 +62,7 @@ def remove_array_delimitter(arr: list, delimitter: str):
         into  [
                 ['4', '9'], ['4', '8'], ['9', '8']
               ]
-        where comma = delimitter
+        where delimitter = ","
     '''
 
     delimitter_count = 0
@@ -261,17 +250,17 @@ def run_bingo_numbers(bingo_numbers: list, bingo_boards: list, win_cond):
 
     win_condition = { 'first': 1, 'last': 0 }
 
-    # bool board mark found numbers as 1 and not found numbers as 0
+    # bool board to mark found numbers as 1 and not found numbers as 0
     bool_boards = {}
 
     # start with all numbers = 0 in the bool_board
     for board in bingo_boards:
         bool_boards[board] = []
         for row in bingo_boards[board]:
-            temp = []
+            l = []
             for _ in row:
-                temp.append(0)
-            bool_boards[board].append(temp)
+                l.append(0)
+            bool_boards[board].append(l)
 
     # read the first boards dimensions to get length / width
     board_dimension = get_arr_len(bingo_boards[0])
@@ -338,7 +327,7 @@ def run_bingo_numbers(bingo_numbers: list, bingo_boards: list, win_cond):
     win_bool_board = bool_boards[winner_board_number]
     win_bingo_board = bingo_boards[winner_board_number]
 
-    # we did not need to know the winner numbers, but i leave this here anyways
+    # we did not need to know the winner numbers, but i keep this here anyways
     strike_numbers = get_strike_numbers(win_bool_board, win_bingo_board)
     str_numbers = ''
     for n in strike_numbers:
@@ -371,11 +360,12 @@ if __name__ == '__main__':
     # fetch raw input data
     puzzle_input_file = open_puzzle_input()
     raw_bingo_numbers = get_random_numbers(puzzle_input_file)
-    raw_bingo_boards = get_bingo_boards(puzzle_input_file)
+    raw_bingo_boards = get_bingo_board_rows(puzzle_input_file)
     puzzle_input_file.close()
 
     # organize input data
-    bingo_numbers = extract_bingo_random_numbers(raw_bingo_numbers)
+    bingo_numbers = remove_array_delimitter(raw_bingo_numbers, ',')
+    bingo_numbers = one_dimesion_down_number_array(bingo_numbers)
     raw_bingo_boards = extract_bingo_board_numbers(raw_bingo_boards)
     bingo_boards = organize_bingo_boards_into_keys(raw_bingo_boards)
 

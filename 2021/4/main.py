@@ -197,7 +197,7 @@ def check_if_won(bool_board: list):
     return has_won[1]
 
 
-def get_sum_of_unmarked_numbers(bool_board: list, bingo_board: list):
+def sum_of_unmarked_numbers(bool_board: list, bingo_board: list):
     # we use the bool table to ignore numbers with 0 val
     # this would not have worked if we were to actually get the numbers
     # but since we only neew the sum, we can care less about ambiguous concerns
@@ -261,24 +261,25 @@ def run_bingo_numbers(bingo_numbers: list, bingo_boards: list, win_cond):
 
     win_condition = { 'first': 1, 'last': 0 }
 
-    # extra helper boards with values that might make things easier
+    # bool board mark found numbers as 1 and not found numbers as 0
     bool_boards = {}
-    board_check_data = {}
 
-    board_dimension = get_arr_len(bingo_boards[0])
-
-    # for keeping track of numbers that is found with helper boards
+    # start with all numbers = 0 in the bool_board
     for board in bingo_boards:
         bool_boards[board] = []
-        board_check_data[board] = []
         for row in bingo_boards[board]:
             temp = []
             for _ in row:
                 temp.append(0)
-                board_check_data[board].append('X')
             bool_boards[board].append(temp)
 
+    # read the first boards dimensions to get length / width
+    board_dimension = get_arr_len(bingo_boards[0])
+
+    # for iterationg boards
     board_numbers = get_arr_len(bingo_boards)
+
+    # register boards that have won
     all_winners = {}
     board_number = 0
     while board_number < board_numbers:
@@ -286,18 +287,14 @@ def run_bingo_numbers(bingo_numbers: list, bingo_boards: list, win_cond):
         all_winners[board_number] = { 0:0, 1:0 }
         board_number += 1
 
-
-    win_condition_met = 0 # if = 1, drops out of while loop
-
-    board_on_halt = None # determine what board has won (or lost)
+    win_condition_met = 0
+    winner_board_number = None
     last_played_bingo_number = None
-    played_numbers = [] # keep track of previous drawn numbers until first win
     bingo_num_length = get_arr_len(bingo_numbers)
     bingo_number_index = 0
     while bingo_number_index < bingo_num_length:
-        bingo_n = bingo_numbers[bingo_number_index]
-        last_played_bingo_number = bingo_n
-        played_numbers.append(bingo_n)
+        current_bingo_number = bingo_numbers[bingo_number_index]
+        last_played_bingo_number = current_bingo_number
 
         board_number = 0
         while board_number < board_numbers:
@@ -309,7 +306,7 @@ def run_bingo_numbers(bingo_numbers: list, bingo_boards: list, win_cond):
 
                     # this is where we compare the bingo numbers
                     player_number = bingo_boards[board_number][row][col]
-                    current_match = player_number == bingo_n
+                    current_match = player_number == current_bingo_number
                     old_match = bool_boards[board_number][row][col]
                     new_match = or_bool_value(old_match, current_match)
                     bool_boards[board_number][row][col] = new_match
@@ -320,31 +317,37 @@ def run_bingo_numbers(bingo_numbers: list, bingo_boards: list, win_cond):
             # for each bingo number, check if we have a winner
             is_winner = check_if_won(bool_boards[board_number])
             all_winners[board_number][is_winner] = 1
-            board_on_halt = board_number
+            winner_board_number = board_number
 
             winners_found = 0
             for _k in all_winners:
                 winners_found += all_winners[_k][1]
 
-            win_condition_met = ( winners_found == win_condition[win_cond])
+            win_condition_met = ( winners_found == win_condition[win_cond] )
 
 
             # end while loop by forcing 0 on board_numbers if winner
-            board_numbers = board_numbers * binary_swap(win_condition_met)
+            board_numbers = ( board_numbers * binary_swap(win_condition_met) )
             board_number += 1
 
         # end while loop by forcing 0 on bingo_num_length if winner
-        bingo_num_length = bingo_num_length * binary_swap(win_condition_met)
+        bingo_num_length = ( bingo_num_length * binary_swap(win_condition_met) )
         bingo_number_index += 1
 
     # extract winner board (bool and bingo)
-    win_bool_board = bool_boards[board_on_halt]
-    win_bingo_board = bingo_boards[board_on_halt]
+    win_bool_board = bool_boards[winner_board_number]
+    win_bingo_board = bingo_boards[winner_board_number]
 
+    # we did not need to know the winner numbers, but i leave this here anyways
     strike_numbers = get_strike_numbers(win_bool_board, win_bingo_board)
-    sum_umarked = get_sum_of_unmarked_numbers(win_bool_board,win_bingo_board)
+    str_numbers = ''
+    for n in strike_numbers:
+        str_numbers += n + ','
+    print('Winner row = ' + str_numbers)
 
-    return ( int(sum_umarked) * int(last_played_bingo_number) )
+    sum_umarked_num = sum_of_unmarked_numbers(win_bool_board, win_bingo_board)
+
+    return ( int(sum_umarked_num) * int(last_played_bingo_number) )
 
 
 def or_bool_value(bool_1, bool_2):

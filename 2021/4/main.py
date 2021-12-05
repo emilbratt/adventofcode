@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from time import sleep
 import os
 
 DIR_MAIN_FILE = os.path.dirname(os.path.abspath(__file__))

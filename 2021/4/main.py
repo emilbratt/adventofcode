@@ -120,18 +120,18 @@ def one_dimesion_down_number_array(number_list: list):
               ]
     '''
     extracted_numbers = []
-    iterator = 0
-    while get_arr_len(number_list) > 0:
-        current_number = number_list[iterator]
-        index = 0
+    main_index = 0
+    while main_index < get_arr_len(number_list) > 0:
+        current_number = number_list[main_index]
+        sub_index = 0
         n = ''
-        while get_arr_len(current_number) > index:
-            n += str(current_number[index])
-            index += 1
+        while get_arr_len(current_number) > sub_index:
+            n += str(current_number[sub_index])
+            sub_index += 1
 
-        del number_list[0]
         extracted_numbers.append(n)
-
+        main_index += 1
+        
     return extracted_numbers
 
 

@@ -32,7 +32,7 @@ def binary_to_decimal(binary: str):
 
 # for swapping binary digits: 1 to 0 or 0 to 1
 def binary_swap(binary):
-    return ( 1 * (int(binary) == 0) )
+    return ( 1 - int(binary) )
 
 
 # we still try to avoid if statements, so arithmetic is key

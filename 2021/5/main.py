@@ -108,7 +108,7 @@ def coordinate_formatting(coordinates: list):
             _arr[keep][index_move] += current_character
             current_character_index += 1
 
-        # prepare a proper list before appending
+        # prepare the proper formatting before appending
         l = [ [ _arr[1][0], _arr[1][1] ], [ _arr[1][2], _arr[1][3] ] ]
         formatted_array.append(l)
 
@@ -145,7 +145,6 @@ def get_dimensions(coordinates: list):
         y_one = int(plots[0][1])
         x_two = int(plots[1][0])
         y_two = int(plots[1][1])
-
 
         x = return_highest_number(x_one,x_two)
         y = return_highest_number(y_one,y_two)
@@ -230,12 +229,11 @@ def fullfill_hydrothermal_plane(coordinates: list, hydro_plane: list):
             hydro_plane[y_one][x_one] += 1
             x_one += x_steps
             y_one += y_steps
-            # increments with either +1 or -1 based on steps contidion
+            # increments with either 0, +1 or -1 based on steps contidion
 
             step += 1
 
         plot_count += 1
-
 
     result = get_overlap_count(hydro_plane)
     return result

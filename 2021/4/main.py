@@ -131,7 +131,7 @@ def one_dimesion_down_number_array(number_list: list):
 
         extracted_numbers.append(n)
         main_index += 1
-        
+
     return extracted_numbers
 
 

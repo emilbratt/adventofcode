@@ -117,8 +117,9 @@ def coordinate_formatting(coordinates: list):
     return formatted_array
 
 
-def filter_out_diagonal_lines(coordinates: list):
-    diagram_dimension = { 0:[], 1:[] } # 1 = plots we keep
+def split_diagonal_lines(coordinates: list):
+    keys = { 0: 'diagonal', 1:'nodiagonal'}
+    new_coordinates = { 'nodiagonal':[], 'diagonal':[] }
     for plots in coordinates:
         x_one = plots[0][0]
         y_one = plots[0][1]
@@ -128,18 +129,19 @@ def filter_out_diagonal_lines(coordinates: list):
         keep_x = ( x_one == x_two )
         keep_y = ( y_one == y_two )
 
-        keep = xor_bool_value(keep_x,keep_y)
-        diagram_dimension[keep].append(plots)
+        # if one of them is 1, it is a non diagonel
+        not_diagonal = xor_bool_value(keep_x,keep_y)
+        new_coordinates[ keys[not_diagonal] ].append(plots)
 
-    return diagram_dimension[1]
+    return new_coordinates
 
 
 def get_dimensions(coordinates: list):
-    dimensions = { 0:{'x':0, 'y':0}, 1:{'x':0, 'y':0} }
+    dimension = { 0:{'x':0, 'y':0}, 1:{'x':0, 'y':0} }
 
     for plots in coordinates:
-        highest_x = dimensions[1]['x']
-        highest_y = dimensions[1]['y']
+        highest_x = dimension[1]['x']
+        highest_y = dimension[1]['y']
 
         x_one = int(plots[0][0])
         y_one = int(plots[0][1])
@@ -152,17 +154,17 @@ def get_dimensions(coordinates: list):
         keep_x = 1 * ( x > highest_x )
         keep_y = 1 * ( y > highest_y )
 
-        dimensions[keep_x]['x'] = x
-        dimensions[keep_y]['y'] = y
+        dimension[keep_x]['x'] = x
+        dimension[keep_y]['y'] = y
 
 
-    highest = [dimensions[1]['x'], dimensions[1]['y']]
+    highest = [dimension[1]['x'], dimension[1]['y']]
     return highest
 
 
-def create_hydrothermal_plane(dimensions: list):
-    x_plane = dimensions[0]
-    y_plane = dimensions[1]
+def create_hydrothermal_plane(dimension: list):
+    x_plane = dimension[0]
+    y_plane = dimension[1]
     x = 0
     plane = []
     while x < ( x_plane + 1 ):
@@ -178,16 +180,16 @@ def create_hydrothermal_plane(dimensions: list):
     return plane
 
 
-def get_overlap_count(hydro_plane: list):
-    row_count = get_arr_len(hydro_plane)
+def get_overlap_count(hydroplane: list):
+    row_count = get_arr_len(hydroplane)
     row = 0
     overlap_count = 0
-    col_count = get_arr_len(hydro_plane[row])
+    col_count = get_arr_len(hydroplane[row])
     while row < row_count:
 
         col = 0
         while col < col_count:
-            val = hydro_plane[row][col]
+            val = hydroplane[row][col]
             is_overlap = 1 * ( val >= 2 )
             overlap_count += is_overlap
             col += 1
@@ -197,9 +199,7 @@ def get_overlap_count(hydro_plane: list):
     return overlap_count
 
 
-def fullfill_hydrothermal_plane(coordinates: list, hydro_plane: list):
-    # this function works with both the diagonal and none diagonal axis
-
+def update_hydroplane(coordinates: list, hydroplane: list):
     total_plot_count = get_arr_len(coordinates)
     plot_count = 0
     while total_plot_count > plot_count:
@@ -226,7 +226,7 @@ def fullfill_hydrothermal_plane(coordinates: list, hydro_plane: list):
 
         step = 0 # iterate until we reach the range + 1 (for last plot)
         while step < ( axis_range + 1 ):
-            hydro_plane[y_one][x_one] += 1
+            hydroplane[y_one][x_one] += 1
             x_one += x_steps
             y_one += y_steps
             # increments with either 0, +1 or -1 based on steps contidion
@@ -235,9 +235,7 @@ def fullfill_hydrothermal_plane(coordinates: list, hydro_plane: list):
 
         plot_count += 1
 
-    result = get_overlap_count(hydro_plane)
-    return result
-
+    return hydroplane
 
 
 if __name__ == '__main__':
@@ -245,23 +243,30 @@ if __name__ == '__main__':
     # fetch raw input data
     puzzle_input_file = open_puzzle_input()
     coordinates = get_coordinates(puzzle_input_file)
-    # puzzle_input_file.close()
+    puzzle_input_file.close()
 
     # prepare data structure for coordinates
     coordinates = coordinate_formatting(coordinates)
 
-    # we complete task 2 first before filtering diagonals
-    dimensions = get_dimensions(coordinates)
-    hydro_plane = create_hydrothermal_plane(dimensions)
-    res_task_2 = fullfill_hydrothermal_plane(coordinates, hydro_plane)
+    # get the width and length of the illustrated field
+    dimension = get_dimensions(coordinates)
 
-    # then we do task 1 by filtering diagonal lines
-    coordinates = filter_out_diagonal_lines(coordinates)
-    dimensions = get_dimensions(coordinates)
-    hydro_plane = create_hydrothermal_plane(dimensions)
-    res_task_1 = fullfill_hydrothermal_plane(coordinates, hydro_plane)
+    # split our coordinates into lists of diagonal and non diagonal
+    split_c = split_diagonal_lines(coordinates)
+    non_diagonal_coordinates = split_c['nodiagonal']
+    diagonal_coordinates = split_c['diagonal']
 
+    # this is the illustrated field of hydrothermal vents
+    hydroplane = create_hydrothermal_plane(dimension)
+
+    # task 1 wants all non diagonal
+    hydroplane = update_hydroplane(non_diagonal_coordinates, hydroplane)
+    task_1_result = get_overlap_count(hydroplane)
     print('Task 1: counting only vertical and horizontal lines')
-    print('Lines overlap ' + str(res_task_1) + ' times')
+    print('Lines overlap ' + str(task_1_result) + ' times')
+
+    # task 2 wants both diagonal and non diagonal, lets update again
+    hydroplane = update_hydroplane(diagonal_coordinates, hydroplane)
+    task_2_result = get_overlap_count(hydroplane)
     print('Task 2: including diagonal ines')
-    print('Lines overlap ' + str(res_task_2) + ' times')
+    print('Lines overlap ' + str(task_2_result) + ' times')

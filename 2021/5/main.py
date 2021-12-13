@@ -209,7 +209,9 @@ def update_hydroplane(coordinates: list, hydroplane: list):
         x_two = int(plots[1][0])
         y_two = int(plots[1][1])
 
-        # this gives us the increments for each axis
+        # this gives us the increment value (0, -1 or +1) for each axis
+        # which in turn makes it possible to run both diagonal and
+        # non diagonal plots in this very same while loop
         x_steps = get_axis_increment_value(x_one,x_two)
         y_steps = get_axis_increment_value(y_one,y_two)
 

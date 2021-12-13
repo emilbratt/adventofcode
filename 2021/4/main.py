@@ -265,7 +265,7 @@ def run_bingo_numbers(bingo_numbers: list, bingo_boards: list, win_cond):
     # for iterationg boards
     board_numbers = get_arr_len(bingo_boards)
 
-    # register boards that have won
+    # for registering boards that have won
     all_winners = {}
     board_number = 0
     while board_number < board_numbers:

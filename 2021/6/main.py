@@ -107,11 +107,11 @@ def total_fast_alg(fish_counter: dict, DAYS: int, max_age: int, reset_age: int):
     day = 0
     while day < DAYS:
 
-        # preserve fish with "zero days left" back to the reset_age value
+        # preserve fish with "zero days left" for the reset_age key
         fish_reset = fish_counter[0]
         age = 0
         while age < max_age:
-            # start from 1 (0 is already moved, we can ignore the overwrite)
+            # start from 1 (0 is already preserved, we can ignore the overwrite)
             age += 1
             # swap over to new age but this age is minus 1
             fish_counter[age - 1] = fish_counter[age]

@@ -92,8 +92,8 @@ def coordinate_formatting(coordinates: list):
             current_character = string_element[current_character_index]
 
             is_comma = 1 * ( current_character == ',' )
-            is_hyphen = ( current_character == '-' )
-            is_whitespace = ( current_character == ' ' )
+            is_hyphen = 1 * ( current_character == '-' )
+            is_whitespace = 1 * ( current_character == ' ' )
             is_gt = ( current_character == '>' )
             is_unwanted = triple_or_bool_value(is_hyphen, is_whitespace, is_gt)
 

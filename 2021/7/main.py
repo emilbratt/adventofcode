@@ -25,7 +25,7 @@ def get_arr_len(arr: list):
     return arr_len
 
 
-def get_highest_position(a: int, b:int):
+def get_highest_number(a: int, b:int):
     return ( a * (a > b) + b * (a <= b) )
 
 
@@ -124,12 +124,12 @@ def one_dimesion_down_number_array(number_list: list):
     return extracted_numbers
 
 
-def get_highest_position_arr(arr: list):
+def get_highest_number_arr(arr: list):
     arr_length = get_arr_len(arr)
     index = 1
     highest_num = int(arr[0])
     while index < arr_length:
-        highest_num = get_highest_position(int(arr[index]), highest_num)
+        highest_num = get_highest_number(int(arr[index]), highest_num)
         index += 1
     return highest_num
 
@@ -191,7 +191,7 @@ def get_next_target(fuel_map: dict, targets: dict):
 
 
 def calc_fuel_by_target(cur_pos_val: int, target: int, increase: int):
-    top_n = get_highest_position(cur_pos_val, target)
+    top_n = get_highest_number(cur_pos_val, target)
     bottom_n = get_lowest_number(cur_pos_val, target)
     steps = top_n
     step = bottom_n
@@ -218,7 +218,7 @@ def run_fuel_calculation(puzzle_input: list, increase: int):
     '''
 
     # create base target positions that we use before calculating better targets
-    highest_position = get_highest_position_arr(puzzle_input)
+    highest_position = get_highest_number_arr(puzzle_input)
     split = highest_position // 2
     targets = {
         'low': split // 2,

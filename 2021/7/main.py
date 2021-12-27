@@ -144,6 +144,7 @@ def shell_sort(arr: list):
 
     return arr
 
+
 def get_highest_number_arr(arr: list):
     arr_length = get_arr_len(arr)
     index = 1
@@ -265,11 +266,6 @@ def run_fuel_calculation_increase(puzzle_input: list, increase: int):
     }
 
     input_arr_len = get_arr_len(puzzle_input)
-
-    # low_target = targets['low']
-    # mid_target = targets['mid']
-    # high_target = targets['high']
-
     end_loop = False
     while end_loop == False:
         fuel_map = {}

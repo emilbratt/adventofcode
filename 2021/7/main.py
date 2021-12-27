@@ -110,7 +110,7 @@ def one_dimesion_down_number_array(number_list: list):
     '''
     extracted_numbers = []
     main_index = 0
-    while main_index < get_arr_len(number_list) > 0:
+    while main_index < get_arr_len(number_list):
         current_number = number_list[main_index]
         sub_index = 0
         n = ''
@@ -211,21 +211,6 @@ def get_next_target(fuel_map: dict, targets: dict):
     return target_base_map[target_key]
 
 
-def calc_fuel_by_target(cur_pos: int, target: int, increase: int):
-    top_n = get_highest_number(cur_pos, target)
-    bottom_n = get_lowest_number(cur_pos, target)
-    steps = top_n
-    step = bottom_n
-    fuel = 0
-    increment = 1
-    while step < steps:
-        fuel += increment
-        increment += increase
-        step += 1
-
-    return fuel
-
-
 def run_fuel_calculation_constant(puzzle_input: list):
     input_arr_len = get_arr_len(puzzle_input)
 
@@ -239,21 +224,43 @@ def run_fuel_calculation_constant(puzzle_input: list):
     while index < input_arr_len:
         cur_pos = puzzle_input[index]
         index += 1
-        fuel += calc_fuel_by_target(cur_pos, target, increase=0)
+        top_n = get_highest_number(cur_pos, target)
+        bottom_n = get_lowest_number(cur_pos, target)
+        fuel += top_n - bottom_n
 
     return { 'target':target, 'fuel': fuel }
 
 
-def run_fuel_calculation_increase(puzzle_input: list, increase: int):
+def get_fuel_inc_by_target(cur_pos: int, target: int):
+    '''
+        get the correct increase + 1 for each step
+        using the "sum of the first n positive integers"
+        1 step = 1
+        2 steps = 3
+        3 steps = 6
+        4 steps = 10
+        5 steps = 15
+        6 steps = 21 and so forth
+        read the over 1 decade old thread about this here:
+        https://math.stackexchange.com/questions/2260/proof-1234-cdotsn-fracn-timesn12
+    '''
+    # get the N in the formula: N x (N +1) / 2
+    top_n = get_highest_number(cur_pos, target)
+    bottom_n = get_lowest_number(cur_pos, target)
+    N = top_n - bottom_n
+
+    # calculate the consumption with the formula
+    fuel = ( N * (N + 1) ) / 2
+    return fuel
+
+
+def run_fuel_calculation_increase(puzzle_input: list):
     '''
         we start with dividing the highest found target creating a split value
         that will serve as the base forming new targets during iterations
 
         the target producing the lowest fuel consumption will be the new
         base for producing 3 new targets and so on
-
-        the increase parameter can be 0 or a larger number for example 1
-        which affect wether each movement will stay at 1 or increase by 1
     '''
 
     # create base target positions that we use before calculating better targets
@@ -276,14 +283,9 @@ def run_fuel_calculation_increase(puzzle_input: list, increase: int):
         while index < input_arr_len:
             cur_pos = puzzle_input[index]
             index += 1
-            fuel_map['low'] += calc_fuel_by_target(
-                                        cur_pos,  targets['low'], increase)
-
-            fuel_map['mid'] += calc_fuel_by_target(
-                                        cur_pos, targets['mid'], increase)
-
-            fuel_map['high'] += calc_fuel_by_target(
-                                        cur_pos, targets['high'], increase)
+            fuel_map['low'] += get_fuel_inc_by_target(cur_pos,  targets['low'])
+            fuel_map['mid'] += get_fuel_inc_by_target(cur_pos, targets['mid'])
+            fuel_map['high'] += get_fuel_inc_by_target(cur_pos, targets['high'])
 
 
         # keep old targets to check if we need to jump out of loop
@@ -311,8 +313,8 @@ def run_fuel_calculation_increase(puzzle_input: list, increase: int):
 
 
     # this is the next step
-    # we have only found a close target until now, lets find the exact one
-    # to calculate the least amount of fuel
+    # most likely we have found a close target until now, lets find the exact
+    # one to get the least amount of fuel for that target
 
     # get lowest fuel calculated so far
     fuel_arr = [fuel_map['low'], fuel_map['mid'],  fuel_map['high']]
@@ -322,11 +324,11 @@ def run_fuel_calculation_increase(puzzle_input: list, increase: int):
     target = targets['closest_target']
 
     # run the new algo to find the least expensive target and the fuel count
-    result = calc_exact_target(puzzle_input, fuel, target, 1)
+    result = calc_exact_target(puzzle_input, fuel, target)
     return result
 
 
-def calc_exact_target(puzzle_input: list,fuel: int, target: int, increase: int):
+def calc_exact_target(puzzle_input: list,fuel: int, target: int):
     input_arr_len = get_arr_len(puzzle_input)
 
     '''
@@ -352,7 +354,7 @@ def calc_exact_target(puzzle_input: list,fuel: int, target: int, increase: int):
         while index < input_arr_len:
             cur_pos = puzzle_input[index]
             index += 1
-            new_fuel += calc_fuel_by_target(cur_pos, target, increase)
+            new_fuel += get_fuel_inc_by_target(cur_pos, target)
         fuel_map[target] = new_fuel
         fuel_has_decreased = (new_fuel < old_fuel)
         old_fuel = new_fuel
@@ -372,7 +374,7 @@ def calc_exact_target(puzzle_input: list,fuel: int, target: int, increase: int):
         while index < input_arr_len:
             cur_pos = puzzle_input[index]
             index += 1
-            new_fuel += calc_fuel_by_target(cur_pos, target, increase)
+            new_fuel += get_fuel_inc_by_target(cur_pos, target)
         fuel_map[target] = new_fuel
         fuel_has_decreased = (new_fuel < old_fuel)
         old_fuel = new_fuel
@@ -418,7 +420,7 @@ if __name__ == '__main__':
     # task 1: expected result: 96678050
     print('Task 2')
     # result = calculate_fuel_increased_rate(puzzle_input)
-    result = run_fuel_calculation_increase(puzzle_input, 1)
+    result = run_fuel_calculation_increase(puzzle_input)
     target = str(result['target'])
-    value = str(result['fuel'])
+    value = str( int(result['fuel']) )
     print('Most efficient target is ' + target + ' with fuel cost at ' + value)
